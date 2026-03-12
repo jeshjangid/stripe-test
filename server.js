@@ -2,8 +2,7 @@ import express from "express"
 import dotenv from "dotenv"
 import Stripe from "stripe"
 import cors from "cors"
-
-import connectDB from "./config/db.js"
+import connectDB from "./config.js/db.js"
 import Order from "./models/Order.js"
 import paymentRoutes from "./routes/PaymentRoutes.js"
 
