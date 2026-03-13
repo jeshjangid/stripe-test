@@ -4,7 +4,7 @@ import Stripe from "stripe"
 import cors from "cors"
 import connectDB from "./config.js/db.js"
 import Order from "./models/Order.js"
-import paymentRoutes from "./routes/PaymentRoutes.js"
+import paymentRoutes from "./routes/paymentRoutes.js"
 
 dotenv.config()
 
@@ -15,7 +15,7 @@ const app = express()
 const stripe = new Stripe(process.env.STRIPE_SECRET)
 
 app.use(cors())
-app.use(express.json())
+// app.use(express.json())
 
 app.use("/api", paymentRoutes)
 
