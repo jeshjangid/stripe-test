@@ -17,7 +17,7 @@ export const createCheckoutSession = async(req,res)=>{
        product_data:{
         name:"Premium Course"
        },
-       unit_amount:2000
+       unit_amount:500
      },
 
      quantity:1
