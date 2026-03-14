@@ -26,9 +26,8 @@ export const createCheckoutSession = async(req,res)=>{
 
    mode:"payment",
 
-   success_url:"https://stripe-test-frontend2.vercel.app/success",
-
-   cancel_url:"https://stripe-test-frontend2.vercel.app/cancel"
+   success_url:"https://myproject-29cf7.web.app/success",
+   cancel_url:"https://myproject-29cf7.web.app/cancel"
 
  })
 
