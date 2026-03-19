@@ -17,7 +17,7 @@ const app = express()
 const stripe = new Stripe(process.env.STRIPE_SECRET)
 
 app.use(cors())
-app.use(express.json())
+
 
 app.use("/api", paymentRoutes)
 
@@ -30,7 +30,8 @@ app.get('/', (req, res) => {
 
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET
 
-app.post("/webhook",express.raw({type:"application/json"}),async(req,res)=>{
+app.post("/webhook",express.raw({type:"application/json"}),async(req,res)=>
+  {
 
  const sig = req.headers["stripe-signature"]
 
@@ -50,26 +51,29 @@ app.post("/webhook",express.raw({type:"application/json"}),async(req,res)=>{
 
  }
 
- if(event.type === "checkout.session.completed"){
+if (event.type === "checkout.session.completed") {
 
-   const session = event.data.object
+  const session = event.data.object;
 
-   await Order.create({
+  const existing = await Order.findOne({ sessionId: session.id });
 
-    sessionId:session.id,
-    product:"Premium Course",
-    amount:session.amount_total,
-    currency:session.currency,
-    status:"paid",
-    customerEmail:session.customer_email
-
-   })
-
- }
+  if (!existing) {
+    await Order.create({
+      sessionId: session.id,
+      product: session.metadata?.productName || "Premium Course",
+      amount: session.amount_total,
+      currency: session.currency,
+      status: "paid",
+      customerEmail: session.customer_details?.email || "unknown",
+    });
+  }
+}
 
  res.json({received:true})
 
 })
+
+app.use(express.json())
 
 app.listen(process.env.PORT,()=>{
 
