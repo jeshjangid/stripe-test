@@ -19,7 +19,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET)
 app.use(cors())
 
 
-app.use("/api", paymentRoutes)
+
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -74,6 +74,7 @@ if (event.type === "checkout.session.completed") {
 })
 
 app.use(express.json())
+app.use("/api", paymentRoutes)
 
 app.listen(process.env.PORT,()=>{
 
