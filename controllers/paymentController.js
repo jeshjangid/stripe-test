@@ -25,8 +25,8 @@ export const createCheckoutSession = async (req, res) => {
 
       mode: "payment",
 
-      success_url: "https://myproject-29cf7.web.app/success",
-      cancel_url: "https://myproject-29cf7.web.app/cancel",
+      success_url: `https://myproject-29cf7.web.app/success`,
+      cancel_url: `https://myproject-29cf7.web.app/ancel`,
     });
 
     res.json({ url: session.url });
