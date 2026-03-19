@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Donations</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Donated Data</h1>
+    <table id="donationsTable">
+        <thead>
+            <tr>
+                <th>Session ID</th>
+                <th>Product</th>
+                <th>Amount</th>
+                <th>Currency</th>
+                <th>Status</th>
+                <th>Customer Email</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Data will be inserted here -->
+        </tbody>
+    </table>
+
+    <script>
+        async function fetchDonations() {
+            try {
+                const response = await fetch('/api/payments');
+                const donations = await response.json();
+                const tbody = document.querySelector('#donationsTable tbody');
+                tbody.innerHTML = '';
+                donations.forEach(donation => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${donation.sessionId}</td>
+                        <td>${donation.product}</td>
+                        <td>${donation.amount / 100}</td> <!-- Assuming amount is in cents -->
+                        <td>${donation.currency.toUpperCase()}</td>
+                        <td>${donation.status}</td>
+                        <td>${donation.customerEmail}</td>
+                        <td>${new Date(donation.createdAt).toLocaleString()}</td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error fetching donations:', error);
+            }
+        }
+
+        // Fetch data on page load
+        fetchDonations();
+    </script>
+</body>
+</html>
