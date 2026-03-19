@@ -1,7 +1,6 @@
 import express from "express"
-import {createCheckoutSession} from "../controllers/paymentController.js"
+import {createCheckoutSession, verifyPayment} from "../controllers/paymentController.js"
 import Order from "../models/Order.js"
-import verifyToken from "../middleware/verifyToken.js"
 
 const router = express.Router()
 
@@ -15,12 +14,6 @@ router.get("/payments",async(req,res)=>{
 
 })
 
-router.get("/success", verifyToken, (req, res) => {
-  res.json({ message: "Payment successful! Welcome to the premium course." })
-})
-
-router.get("/cancel", verifyToken, (req, res) => {
-  res.json({ message: "Payment cancelled. You can try again anytime." })
-})
+router.post("/verify-payment", verifyPayment);
 
 export default router
