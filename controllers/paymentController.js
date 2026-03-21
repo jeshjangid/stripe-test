@@ -31,6 +31,8 @@ export const createCheckoutSession = async (req, res) => {
 
       mode: "payment",
 
+      customer_email: customerEmail,
+
       // ✅ IMPORTANT CHANGE
       success_url:
         "https://myproject-29cf7.web.app/success?session_id={CHECKOUT_SESSION_ID}",
