@@ -1,10 +1,11 @@
 import Stripe from "stripe";
+import Order from "../models/Order.js";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET);
 
 export const createCheckoutSession = async (req, res) => {
   try {
-    const { amount, productName } = req.body;
+    const { amount, productName, customerEmail } = req.body;
 
     // ✅ validation (important)
     if (!amount || amount < 1) {
@@ -38,7 +39,22 @@ export const createCheckoutSession = async (req, res) => {
         "https://myproject-29cf7.web.app/cancel?session_id={CHECKOUT_SESSION_ID}",
     });
 
-    res.json({ url: session.url });
+    const order = await Order.create({
+      sessionId: session.id,
+      product: productName || "Premium Course",
+      amount,
+      currency: "usd",
+      status: "pending",
+      customerEmail: customerEmail || null,
+      transitions: [
+        {
+          status: "pending",
+          details: "Checkout session created",
+        },
+      ],
+    });
+
+    res.json({ url: session.url, orderId: order._id });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -54,11 +70,22 @@ export const verifyPayment = async (req, res) => {
 
     const session = await stripe.checkout.sessions.retrieve(session_id);
 
-    if (session.payment_status === "paid") {
-      return res.json({ success: true });
+    const order = await Order.findOne({ sessionId: session_id });
+    const nextStatus = session.payment_status === "paid" ? "paid" : session.payment_status;
+
+    if (order) {
+      if (order.status !== nextStatus) {
+        order.status = nextStatus;
+        order.transitions.push({
+          status: nextStatus,
+          details: `Stripe payment_status: ${session.payment_status}`,
+        });
+      }
+      await order.save();
     }
 
-    res.json({ success: false });
+    const success = session.payment_status === "paid";
+    return res.json({ success, order });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
